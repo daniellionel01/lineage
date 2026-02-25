@@ -70,8 +70,8 @@ export function PersonNode({ id, data, selected }: { id: string; data: PersonDat
       onMouseEnter={() => setShowMenu(true)}
       onMouseLeave={() => setShowMenu(false)}
     >
-      <Handle type="target" position={Position.Top} className="!bg-slate-300 w-3 h-3 border-2 border-white" />
-      <Handle type="source" position={Position.Bottom} className="!bg-slate-300 w-3 h-3 border-2 border-white" />
+      <Handle type="target" position={Position.Top} id="top" className="!bg-slate-300 w-3 h-3 border-2 border-white" />
+      <Handle type="source" position={Position.Bottom} id="bottom" className="!bg-slate-300 w-3 h-3 border-2 border-white" />
       <Handle type="source" position={Position.Right} id="right" className="!bg-slate-300 w-3 h-3 border-2 border-white" />
       <Handle type="target" position={Position.Left} id="left" className="!bg-slate-300 w-3 h-3 border-2 border-white" />
 
@@ -82,6 +82,10 @@ export function PersonNode({ id, data, selected }: { id: string; data: PersonDat
           <div className="flex items-center gap-1 w-full">
             <span className="opacity-50 w-4">*</span>
             {renderEditableField("birth", "Birth", "")}
+          </div>
+          <div className="flex items-center gap-1 w-full">
+            <span className="opacity-50 w-4">📍</span>
+            {renderEditableField("birthplace", "Birthplace", "")}
           </div>
           <div className="flex items-center gap-1 w-full">
             <span className="opacity-50 w-4">†</span>

@@ -15,6 +15,7 @@ export type PersonData = {
   name: string;
   birth: string;
   death: string;
+  birthplace?: string;
   gender?: "male" | "female" | "other";
 };
 
@@ -40,41 +41,41 @@ const initialNodes: PersonNode[] = [
     id: "g1-1",
     type: "person",
     position: { x: 0, y: 0 },
-    data: { name: "Arthur Pendragon", birth: "1890", death: "1960", gender: "male" },
+    data: { name: "Arthur Pendragon", birth: "1890", death: "1960", birthplace: "London", gender: "male" },
   },
   {
     id: "g1-2",
     type: "person",
     position: { x: 300, y: 0 },
-    data: { name: "Eleanor Vance", birth: "1895", death: "1975", gender: "female" },
+    data: { name: "Eleanor Vance", birth: "1895", death: "1975", birthplace: "York", gender: "female" },
   },
   {
     id: "g2-1",
     type: "person",
     position: { x: 150, y: 200 },
-    data: { name: "William Pendragon", birth: "1920", death: "1995", gender: "male" },
+    data: { name: "William Pendragon", birth: "1920", death: "1995", birthplace: "London", gender: "male" },
   },
   {
     id: "g2-2",
     type: "person",
     position: { x: 450, y: 200 },
-    data: { name: "Sarah Jenkins", birth: "1922", death: "2010", gender: "female" },
+    data: { name: "Sarah Jenkins", birth: "1922", death: "2010", birthplace: "Bristol", gender: "female" },
   },
   {
     id: "g3-1",
     type: "person",
     position: { x: 300, y: 400 },
-    data: { name: "James Pendragon", birth: "1950", death: "", gender: "male" },
+    data: { name: "James Pendragon", birth: "1950", death: "", birthplace: "London", gender: "male" },
   },
 ];
 
 const initialEdges: Edge[] = [
-  { id: "e-g1-partner", source: "g1-1", target: "g1-2", type: "straight", animated: true },
-  { id: "e-g1-to-g2", source: "g1-1", target: "g2-1", type: "smoothstep" },
-  { id: "e-g1-2-to-g2", source: "g1-2", target: "g2-1", type: "smoothstep" },
-  { id: "e-g2-partner", source: "g2-1", target: "g2-2", type: "straight", animated: true },
-  { id: "e-g2-to-g3", source: "g2-1", target: "g3-1", type: "smoothstep" },
-  { id: "e-g2-2-to-g3", source: "g2-2", target: "g3-1", type: "smoothstep" },
+  { id: "e-g1-partner", source: "g1-1", sourceHandle: "right", target: "g1-2", targetHandle: "left", type: "straight", animated: true },
+  { id: "e-g1-to-g2", source: "g1-1", sourceHandle: "bottom", target: "g2-1", targetHandle: "top", type: "smoothstep" },
+  { id: "e-g1-2-to-g2", source: "g1-2", sourceHandle: "bottom", target: "g2-1", targetHandle: "top", type: "smoothstep" },
+  { id: "e-g2-partner", source: "g2-1", sourceHandle: "right", target: "g2-2", targetHandle: "left", type: "straight", animated: true },
+  { id: "e-g2-to-g3", source: "g2-1", sourceHandle: "bottom", target: "g3-1", targetHandle: "top", type: "smoothstep" },
+  { id: "e-g2-2-to-g3", source: "g2-2", sourceHandle: "bottom", target: "g3-1", targetHandle: "top", type: "smoothstep" },
 ];
 
 const generateId = () => Math.random().toString(36).substring(2, 9);
@@ -94,7 +95,10 @@ export const useStore = create<FamilyStore>()(
       },
 
       onConnect: (connection) => {
-        set({ edges: addEdge({ ...connection, type: "smoothstep" }, get().edges) });
+        const isPartnerConnection = connection.sourceHandle === "right" || connection.sourceHandle === "left";
+        const edgeType = isPartnerConnection ? "straight" : "smoothstep";
+        const animated = isPartnerConnection;
+        set({ edges: addEdge({ ...connection, type: edgeType, animated }, get().edges) });
       },
 
       addPerson: (data) => {
@@ -143,7 +147,9 @@ export const useStore = create<FamilyStore>()(
         const newEdge: Edge = {
           id: `e-${parentId}-${childId}`,
           source: parentId,
+          sourceHandle: "bottom",
           target: childId,
+          targetHandle: "top",
           type: "smoothstep",
         };
 
@@ -170,7 +176,9 @@ export const useStore = create<FamilyStore>()(
         const newEdge: Edge = {
           id: `e-${partnerId}-${newPartnerId}`,
           source: partnerId,
+          sourceHandle: "right",
           target: newPartnerId,
+          targetHandle: "left",
           type: "straight",
           animated: true,
         };
